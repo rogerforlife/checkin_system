@@ -1,0 +1,42 @@
+server {
+    # 監聽 Port
+    listen       ${NGINX_PORT};
+    listen  [::]:${NGINX_PORT};
+    server_name  localhost;
+
+    # 設定 root
+    root /usr/share/nginx/html/;
+
+    # 設定 proxy timeout
+    proxy_connect_timeout       300;
+    proxy_send_timeout          300;
+    proxy_read_timeout          300;
+    send_timeout                300;
+
+    # 設定前端網站進入點
+    # 此寫法為React的方式
+    # 其他前端框架或Html需要修改此處
+    location / {
+        proxy_pass https://www.google.com.tw;
+        # ${NGINX_BASE_ROUTE};
+    }
+
+    # Django 的 Api
+    # 一般專案不需要多一層 /django/
+    # 直接將/api/代理就可以
+    location /api/ {
+        include /etc/nginx/uwsgi_params;
+        uwsgi_pass seperate_django:55555;
+    }
+
+    # Django 的 Cas
+    location /cas/ {
+        include /etc/nginx/uwsgi_params;
+        uwsgi_pass seperate_django:55555;
+    }
+    
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        root   /usr/share/nginx/html;
+    }
+}

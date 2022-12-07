@@ -1,0 +1,39 @@
+version: "3"
+services:
+  seperate_web:
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: ./docker/${DOCKER_NGINX_DOCKER_FILE}
+      args:
+        - ENV=${DOCKER_ENV_FILE}
+    container_name: ${DOCKER_WEB_CONTAINER}
+    ports:
+      - ${DOCKER_WEB_PORT}:${DOCKER_WEB_PORT}
+    volumes:
+      - ./nginx/nginx.conf.template:/etc/nginx/templates/default.conf.template
+      - ./nginx/uwsgi_params:/etc/nginx/uwsgi_params
+    environment:
+      NGINX_PORT: ${DOCKER_WEB_PORT}
+      NGINX_BASE_ROUTE: ${DOCKER_NGINX_BASE_ROUTE}
+    links:
+      - seperate_django
+  seperate_django:
+    restart: unless-stopped
+    container_name: ${DOCKER_DJANGO_CONTAINER}
+    build:
+      context: .
+      dockerfile: ./docker/django.dockerfile
+      args:
+        - ENV=${DOCKER_ENV_FILE}
+    expose:
+      - 55555
+    volumes:
+      - type: volume
+        source: log
+        target: /log
+        volume:
+          nocopy: false
+
+volumes:
+  log: null

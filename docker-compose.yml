@@ -1,0 +1,52 @@
+version: "3.6"
+services:
+  seperate_database:
+    image: postgres:13
+    container_name: ${DOCKER_DB_CONTAINER}
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: ${DOCKER_DB_PASSWORD}
+      POSTGRES_DB: ${DOCKER_DB_DATABASE}
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+    ports:
+      - '${DOCKER_DB_PORT}:5432'
+  seperate_web:
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: ./docker/${DOCKER_NGINX_DOCKER_FILE}
+      args:
+        - ENV=${DOCKER_ENV_FILE}
+    container_name: ${DOCKER_WEB_CONTAINER}
+    ports:
+      - ${DOCKER_WEB_PORT}:${DOCKER_WEB_PORT}
+    volumes:
+      - ./nginx/nginx.conf.template:/etc/nginx/templates/default.conf.template
+      - ./nginx/uwsgi_params:/etc/nginx/uwsgi_params
+    environment:
+      NGINX_PORT: ${DOCKER_WEB_PORT}
+      NGINX_BASE_ROUTE: ${DOCKER_NGINX_BASE_ROUTE}
+    links:
+      - seperate_django
+  seperate_django:
+    restart: unless-stopped
+    container_name: ${DOCKER_DJANGO_CONTAINER}
+    build:
+      context: .
+      dockerfile: ./docker/django.dockerfile
+      args:
+        - ENV=${DOCKER_ENV_FILE}
+    depends_on:
+      - seperate_database
+    expose:
+      - 55555
+    volumes:
+      - type: volume
+        source: log
+        target: /log
+        volume:
+          nocopy: false
+
+volumes:
+  log: null

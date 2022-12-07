@@ -1,4 +1,4 @@
 /postgres-data
-checkin_system_web/.env
+.env
 .vscode
 __pycache__
