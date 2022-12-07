@@ -1,0 +1,4 @@
+/react/node_modules
+/react/build
+.git*
+/postgres-data
