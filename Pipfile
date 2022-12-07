@@ -1,0 +1,27 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+django = "==2.2.11"
+psycopg2-binary = "==2.8.4"
+djangorestframework = "==3.12.2"
+django-cas-ng = "==4.1.1"
+requests = "==2.23.0"
+django-filter = "==2.4.0"
+cx-oracle = "==7.3.0"
+numpy = "==1.20.0"
+django-crontab = "==0.7.1"
+sentry-sdk = "==0.20.3"
+django-environ = "~=0.4"
+fluent-logger = "==0.10.0"
+xlrd = "===1.2.0"
+flake8 = "==5.0.4"
+isort = "==5.10.1"
+importlib-metadata = "==4.13.0"
+
+[dev-packages]
+
+[requires]
+python_version = "3.9"
